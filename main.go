@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -53,6 +55,16 @@ func getHero(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func createHero(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var superHero SuperHero
+	_ = json.NewDecoder(r.Body).Decode(&superHero)
+	superHero.ID = strconv.Itoa(rand.Intn(100000000))
+	superHeros = append(superHeros, superHero)
+	json.NewEncoder(w).Encode(superHero)
+}
+
 func main() {
 	r := mux.NewRouter()
 
@@ -77,7 +89,7 @@ func main() {
 
 	r.HandleFunc("/heroes", getHeroes).Methods("GET")
 	r.HandleFunc("/heroes/{id}", getHero).Methods("GET")
-	r.HandleFunc("/heroes", createMovie).Methods("POST")
+	r.HandleFunc("/heroes", createHero).Methods("POST")
 	r.HandleFunc("/heroes/{id}", updateHero).Methods("PUT")
 	r.HandleFunc("/heroes/{id}", deleteHero).Methods("DELETE")
 
