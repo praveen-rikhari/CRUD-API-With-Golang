@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -63,6 +63,23 @@ func createHero(w http.ResponseWriter, r *http.Request) {
 	superHero.ID = strconv.Itoa(rand.Intn(100000000))
 	superHeros = append(superHeros, superHero)
 	json.NewEncoder(w).Encode(superHero)
+}
+
+func updateHero(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+
+	for index, item := range superHeros {
+		if item.ID == params["id"] {
+			superHeros = append(superHeros[:index], superHeros[index+1:]...)
+			var superHero SuperHero
+			_ = json.NewDecoder(r.Body).Decode(&superHero)
+			superHero.ID = params["id"]
+			superHeros = append(superHeros, superHero)
+			json.NewEncoder(w).Encode(superHero)
+			return
+		}
+	}
 }
 
 func main() {
