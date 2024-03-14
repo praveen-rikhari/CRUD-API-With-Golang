@@ -28,6 +28,18 @@ func getHeroes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(superHeros)
 }
 
+func deleteHero(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+
+	for index, item := range superHeros {
+		if item.ID == params["id"] {
+			superHeros = append(superHeros[:index], superHeros[index+1:]...)
+			break
+		}
+	}
+}
+
 func main() {
 	r := mux.NewRouter()
 
